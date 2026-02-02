@@ -55,7 +55,7 @@
     .buttons {
       margin-top: 2rem;
       position: relative;
-      height: 90px;
+      height: 130px;
       width: min(360px, 80vw);
       margin-inline: auto;
     }
@@ -85,8 +85,8 @@
     }
 
     #btnNo {
-      right: 0;
-      top: 0;
+      left: 0;
+      top: 8px;
       background: #f4f4f4;
       color: #616161;
       border: 1px solid #d3d3d3;
@@ -152,8 +152,6 @@
 <body>
   <main>
     <h1>Daniela, will you be my valentine?</h1>
-    <p class="lede">This page is a small, fun setup from Pablo—something sweet and playful. Pick the button that feels right.</p>
-    <p class="tip">(Hover a finger or mouse near “no” and see what happens… it likes to stay shy.)</p>
     <div class="buttons" aria-label="Valentine answer choices">
       <button id="btnYes" type="button">Yes, forever</button>
       <button id="btnNo" type="button" aria-hidden="true">No</button>
@@ -169,16 +167,33 @@
     const celebrate = document.getElementById("celebrate");
     const btnYes = document.getElementById("btnYes");
 
-    const safeZone = 120;
+    const safeZone = 140;
 
     function moveNoButton() {
-      const bounds = buttonWrapper.getBoundingClientRect();
-      const maxX = bounds.width - btnNo.offsetWidth - 8;
-      const maxY = bounds.height - btnNo.offsetHeight - 8;
-      const newLeft = Math.random() * (maxX < 0 ? 0 : maxX);
-      const newTop = Math.random() * (maxY < 0 ? 0 : maxY);
+      const wrapperRect = buttonWrapper.getBoundingClientRect();
+      const maxX = wrapperRect.width - btnNo.offsetWidth - 8;
+      const maxY = wrapperRect.height - btnNo.offsetHeight - 8;
+      let newLeft;
+      let newTop;
+      let attempts = 0;
+
+      do {
+        newLeft = Math.random() * (maxX < 0 ? 0 : maxX);
+        newTop = Math.random() * (maxY < 0 ? 0 : maxY);
+        attempts += 1;
+      } while (attempts < 30 && isTooCloseToYes(newLeft, newTop, wrapperRect));
+
       btnNo.style.left = `${newLeft}px`;
       btnNo.style.top = `${newTop}px`;
+    }
+
+    function isTooCloseToYes(left, top, wrapperRect) {
+      const yesRect = btnYes.getBoundingClientRect();
+      const yesCenterX = yesRect.left + yesRect.width / 2;
+      const yesCenterY = yesRect.top + yesRect.height / 2;
+      const candidateCenterX = wrapperRect.left + left + btnNo.offsetWidth / 2;
+      const candidateCenterY = wrapperRect.top + top + btnNo.offsetHeight / 2;
+      return Math.hypot(yesCenterX - candidateCenterX, yesCenterY - candidateCenterY) < safeZone;
     }
 
     document.addEventListener("mousemove", (event) => {
