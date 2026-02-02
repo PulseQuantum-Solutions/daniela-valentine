@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daniela, will you be my valentine?</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      background: radial-gradient(circle at top, #ffd0d3 0%, #ffd9ef 35%, #c3b9ff 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    main {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 32px;
+      max-width: 520px;
+      width: 100%;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      text-align: center;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 3vw, 3rem);
+      margin: 0;
+      color: #3d2256;
+    }
+
+    p.lede {
+      margin: 1rem 0 0;
+      font-size: 1.1rem;
+      color: #5b3b7a;
+    }
+
+    p.tip {
+      color: #6e4e8b;
+      margin-top: 0.25rem;
+      font-size: 0.95rem;
+    }
+
+    .buttons {
+      margin-top: 2rem;
+      position: relative;
+      height: 90px;
+      width: min(360px, 80vw);
+      margin-inline: auto;
+    }
+
+    .buttons button {
+      position: absolute;
+      padding: 0.95rem 2.4rem;
+      border-radius: 999px;
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+      box-shadow: 0 10px 20px rgba(77, 32, 110, 0.25);
+    }
+
+    #btnYes {
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(135deg, #ff7fb6, #ffaec5);
+      color: #fff;
+    }
+
+    #btnYes:hover {
+      transform: translate(-50%, -50%) scale(1.02);
+    }
+
+    #btnNo {
+      right: 0;
+      top: 0;
+      background: #f4f4f4;
+      color: #616161;
+      border: 1px solid #d3d3d3;
+      cursor: default;
+    }
+
+    #btnNo:focus-visible {
+      outline: 3px solid #ff88bf;
+    }
+
+    .celebrate {
+      margin-top: 1.75rem;
+      padding: 1.5rem;
+      border-radius: 20px;
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(255, 223, 224, 0.85));
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      align-items: center;
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .celebrate.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .celebrate img {
+      width: 180px;
+      border-radius: 16px;
+      box-shadow: 0 18px 35px rgba(0, 0, 0, 0.25);
+    }
+
+    .celebrate p {
+      margin: 0;
+      color: #3d2256;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    @media (max-width: 400px) {
+      main {
+        padding: 2rem 1.5rem;
+      }
+
+      .buttons {
+        height: 110px;
+      }
+
+      #btnYes,
+      #btnNo {
+        font-size: 0.95rem;
+        padding: 0.85rem 1.7rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Daniela, will you be my valentine?</h1>
+    <p class="lede">This page is a small, fun setup from Pablo—something sweet and playful. Pick the button that feels right.</p>
+    <p class="tip">(Hover a finger or mouse near “no” and see what happens… it likes to stay shy.)</p>
+    <div class="buttons" aria-label="Valentine answer choices">
+      <button id="btnYes" type="button">Yes, forever</button>
+      <button id="btnNo" type="button" aria-hidden="true">No</button>
+    </div>
+    <div id="celebrate" class="celebrate" role="status" aria-live="polite">
+      <img src="https://media.giphy.com/media/3o6Zt6ML6BklcajjsA/giphy.gif" alt="Leonardo DiCaprio winking and cheering with a champagne glass." />
+      <p>That’s the energy! Here’s to us. 🥂</p>
+    </div>
+  </main>
+  <script>
+    const btnNo = document.getElementById("btnNo");
+    const buttonWrapper = document.querySelector(".buttons");
+    const celebrate = document.getElementById("celebrate");
+    const btnYes = document.getElementById("btnYes");
+
+    const safeZone = 120;
+
+    function moveNoButton() {
+      const bounds = buttonWrapper.getBoundingClientRect();
+      const maxX = bounds.width - btnNo.offsetWidth - 8;
+      const maxY = bounds.height - btnNo.offsetHeight - 8;
+      const newLeft = Math.random() * (maxX < 0 ? 0 : maxX);
+      const newTop = Math.random() * (maxY < 0 ? 0 : maxY);
+      btnNo.style.left = `${newLeft}px`;
+      btnNo.style.top = `${newTop}px`;
+    }
+
+    document.addEventListener("mousemove", (event) => {
+      const rect = btnNo.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const distance = Math.hypot(centerX - event.clientX, centerY - event.clientY);
+      if (distance < safeZone) {
+        moveNoButton();
+      }
+    });
+
+    btnNo.addEventListener("mouseenter", moveNoButton);
+
+    btnYes.addEventListener("click", () => {
+      celebrate.classList.add("visible");
+    });
+  </script>
+</body>
+</html>
